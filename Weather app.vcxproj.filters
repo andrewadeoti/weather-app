@@ -18,8 +18,5 @@
     <ClCompile Include="Weather app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="location manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
