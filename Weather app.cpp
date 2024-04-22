@@ -1,10 +1,10 @@
 #include <iostream>
+#include <fstream>
 #include <curl/curl.h>
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
-#include <fstream>
 
 using namespace rapidjson;
 using namespace std;
@@ -15,16 +15,25 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
     return total_size;
 }
 
-int main() {
+void saveOutputToFile(const string& output) {
+    ofstream outputFile("weather_output.txt");
+    if (outputFile.is_open()) {
+        outputFile << output;
+        cout << "Output saved to 'weather_output.txt'." << endl;
+        outputFile.close();
+    }
+    else {
+        cerr << "Unable to save output to file." << endl;
+    }
+}
 
+int main() {
     CURL* curl = curl_easy_init();
 
     if (curl) {
-
         string userInput;
 
         cout << "Enter location: ";
-
         cin >> userInput;
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
@@ -50,7 +59,6 @@ int main() {
             double latitude = parsedData["results"][0]["latitude"].GetDouble();
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
-            // Construct the URL for the weather API
             string weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=";
             weatherUrl += to_string(latitude) + "&longitude=" + to_string(longitude) + "&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
 
@@ -101,6 +109,12 @@ int main() {
 
                         // Exit the program after printing the first hourly data point
                         if (i == 0) {
+                            cout << "Do you want to save the output to a file? (Y/N): ";
+                            char choice;
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                saveOutputToFile(weatherData);
+                            }
                             curl_easy_cleanup(curl);
                             return 0;
                         }
@@ -120,6 +134,8 @@ int main() {
 
     return 0;
 }
+// when the output is displayed on the console, the user is given an option to save if the user s to press Y (yes)then it saves the console output into weather_output.txt
+// if the user is to press N (no)then it deletes the output displayed.
 
 
 

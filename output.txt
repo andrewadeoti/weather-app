@@ -1,0 +1,12 @@
+Latitude: 51.5085
+Longitude: -0.12574
+Temperature: 9.4 °C
+Wind Speed: 9.4 m/s
+Wind Direction: 328 degrees
+Weather Code: 3
+Hourly Data:
+Time: 2024-04-22T00:00
+Temperature: 5.3 °C
+Humidity: 79%
+Wind Speed: 9.6 m/s
+
