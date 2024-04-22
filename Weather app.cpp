@@ -43,6 +43,15 @@ void viewHistory() {
     }
 }
 
+void deleteHistory() {
+    if (remove("weather_output.txt") != 0) {
+        cerr << "Error deleting history file." << endl;
+    }
+    else {
+        cout << "History file deleted successfully." << endl;
+    }
+}
+
 int main() {
     CURL* curl = curl_easy_init();
 
@@ -138,6 +147,12 @@ int main() {
                                 viewHistory();
                             }
 
+                            cout << "Do you want to delete history? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                deleteHistory();
+                            }
+
                             curl_easy_cleanup(curl);
                             return 0;
                         }
@@ -157,6 +172,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
