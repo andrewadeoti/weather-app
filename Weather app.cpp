@@ -6,6 +6,7 @@
 #include "rapidjson/stringbuffer.h"
 #include <string>
 #include <ctime>
+#include <vector>
 
 using namespace rapidjson;
 using namespace std;
@@ -53,7 +54,7 @@ void deleteHistory() {
 }
 
 void setFavoriteLocation(const string& location) {
-    ofstream favLocationFile("favorite_location.txt");
+    ofstream favLocationFile("favorite_location.txt", ios::app);
     if (favLocationFile.is_open()) {
         favLocationFile << location << endl;
         cout << "Favorite location set to: " << location << endl;
@@ -61,6 +62,61 @@ void setFavoriteLocation(const string& location) {
     }
     else {
         cerr << "Unable to set favorite location." << endl;
+    }
+}
+
+void viewFavoriteLocations() {
+    ifstream favLocationFile("favorite_location.txt");
+    if (favLocationFile.is_open()) {
+        string location;
+        cout << "Your favorite locations:" << endl;
+        while (getline(favLocationFile, location)) {
+            cout << location << endl;
+        }
+        favLocationFile.close();
+    }
+    else {
+        cerr << "Unable to open favorite location file." << endl;
+    }
+}
+
+void deleteFavoriteLocation(const string& locationToDelete) {
+    ifstream inputFile("favorite_location.txt");
+    ofstream tempFile("temp.txt");
+
+    if (inputFile.is_open() && tempFile.is_open()) {
+        string location;
+        while (getline(inputFile, location)) {
+            if (location != locationToDelete) {
+                tempFile << location << endl;
+            }
+        }
+        inputFile.close();
+        tempFile.close();
+
+        if (remove("favorite_location.txt") != 0) {
+            cerr << "Error deleting favorite location." << endl;
+            return;
+        }
+
+        if (rename("temp.txt", "favorite_location.txt") != 0) {
+            cerr << "Error renaming temp file." << endl;
+            return;
+        }
+
+        cout << "Favorite location deleted successfully." << endl;
+    }
+    else {
+        cerr << "Unable to open files for deletion." << endl;
+    }
+}
+
+void deleteAllFavoriteLocations() {
+    if (remove("favorite_location.txt") != 0) {
+        cerr << "Error deleting all favorite locations." << endl;
+    }
+    else {
+        cout << "All favorite locations deleted successfully." << endl;
     }
 }
 
@@ -79,6 +135,14 @@ int main() {
 
         if (favChoice == 'Y' || favChoice == 'y') {
             setFavoriteLocation(userInput);
+        }
+
+        cout << "Do you want to view your favorite locations? (Y/N): ";
+        char viewChoice;
+        cin >> viewChoice;
+
+        if (viewChoice == 'Y' || viewChoice == 'y') {
+            viewFavoriteLocations();
         }
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
@@ -171,6 +235,21 @@ int main() {
                             cin >> choice;
                             if (choice == 'Y' || choice == 'y') {
                                 deleteHistory();
+                            }
+
+                            cout << "Do you want to delete a favorite location? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                string locationToDelete;
+                                cout << "Enter the location to delete: ";
+                                cin >> locationToDelete;
+                                deleteFavoriteLocation(locationToDelete);
+                            }
+
+                            cout << "Do you want to delete all favorite locations? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                deleteAllFavoriteLocations();
                             }
 
                             curl_easy_cleanup(curl);
