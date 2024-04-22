@@ -5,6 +5,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
+#include <ctime> // Include ctime for localtime
 
 using namespace rapidjson;
 using namespace std;
@@ -31,7 +32,7 @@ int main() {
     CURL* curl = curl_easy_init();
 
     if (curl) {
-        string userInput;
+        string userInput; // Declare userInput here
 
         cout << "Enter location: ";
         cin >> userInput;
@@ -134,13 +135,13 @@ int main() {
 
     return 0;
 }
-// when the output is displayed on the console, the user is given an option to save if the user s to press Y (yes)then it saves the console output into weather_output.txt
-// if the user is to press N (no)then it deletes the output displayed.
+
 
 
 
 
 //#include <iostream>
+//#include <fstream>
 //#include <curl/curl.h>
 //#include "rapidjson/document.h"
 //#include "rapidjson/writer.h"
@@ -156,10 +157,24 @@ int main() {
 //    return total_size;
 //}
 //
+//void saveOutputToFile(const string& output) {
+//    ofstream outputFile("weather_output.txt");
+//    if (outputFile.is_open()) {
+//        outputFile << output;
+//        cout << "Output saved to 'weather_output.txt'." << endl;
+//        outputFile.close();
+//    }
+//    else {
+//        cerr << "Unable to save output to file." << endl;
+//    }
+//}
+//
 //int main() {
 //    CURL* curl = curl_easy_init();
+//
 //    if (curl) {
 //        string userInput;
+//
 //        cout << "Enter location: ";
 //        cin >> userInput;
 //
@@ -186,7 +201,6 @@ int main() {
 //            double latitude = parsedData["results"][0]["latitude"].GetDouble();
 //            double longitude = parsedData["results"][0]["longitude"].GetDouble();
 //
-//            // Construct the URL for the weather API
 //            string weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=";
 //            weatherUrl += to_string(latitude) + "&longitude=" + to_string(longitude) + "&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
 //
@@ -219,6 +233,7 @@ int main() {
 //                cout << "Wind Speed: " << windSpeed << " m/s" << endl;
 //                cout << "Wind Direction: " << windDirection << " degrees" << endl;
 //                cout << "Weather Code: " << weatherCode << endl;
+//                cout << "Hourly Data:" << endl;
 //
 //                if (weatherParsedData.HasMember("hourly")) {
 //                    const Value& hourly = weatherParsedData["hourly"];
@@ -227,13 +242,24 @@ int main() {
 //                    const Value& hourlyHumidity = hourly["relativehumidity_2m"];
 //                    const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 //
-//                    cout << "Hourly Data:" << endl;
 //                    for (SizeType i = 0; i < time.Size(); ++i) {
 //                        cout << "Time: " << time[i].GetString() << endl;
 //                        cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
 //                        cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
 //                        cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
 //                        cout << endl;
+//
+//                        // Exit the program after printing the first hourly data point
+//                        if (i == 0) {
+//                            cout << "Do you want to save the output to a file? (Y/N): ";
+//                            char choice;
+//                            cin >> choice;
+//                            if (choice == 'Y' || choice == 'y') {
+//                                saveOutputToFile(weatherData);
+//                            }
+//                            curl_easy_cleanup(curl);
+//                            return 0;
+//                        }
 //                    }
 //                }
 //            }
@@ -250,6 +276,13 @@ int main() {
 //
 //    return 0;
 //}
+// when the output is displayed on the console, the user is given an option to save if the user s to press Y (yes)then it saves the console output into weather_output.txt
+// if the user is to press N (no)then it deletes the output displayed.
+
+
+
+
+
 
 
 //#include <iostream>
