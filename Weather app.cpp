@@ -80,6 +80,8 @@ void viewFavoriteLocations() {
     }
 }
 
+
+
 void deleteFavoriteLocation(const string& locationToDelete) {
     ifstream inputFile("favorite_location.txt");
     ofstream tempFile("temp.txt");
