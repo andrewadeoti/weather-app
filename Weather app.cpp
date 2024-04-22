@@ -130,6 +130,7 @@ int main() {
             }
 
             saveOutputToFile(weatherData);
+            saveHistory(weatherData);
 
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
@@ -156,10 +157,11 @@ int main() {
                     const Value& hourlyHumidity = hourly["relativehumidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
-                    cout << "Do you want to search for data at a specific time? (Y/N): ";
+                    cout << "Do you want to search by time or view full data? (S/F): ";
                     char choice;
                     cin >> choice;
-                    if (choice == 'Y' || choice == 'y') {
+
+                    if (choice == 'S' || choice == 's') {
                         searchByTime(time, hourlyTemperature, hourlyHumidity, hourlyWindSpeed);
                     }
                     else {
