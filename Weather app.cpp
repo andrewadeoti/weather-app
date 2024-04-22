@@ -17,10 +17,10 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
 }
 
 void saveOutputToFile(const string& output) {
-    ofstream outputFile("weather_data.txt");
+    ofstream outputFile("weather_output.txt", ios::app); // Append mode to append to existing file
     if (outputFile.is_open()) {
         outputFile << output << endl;
-        cout << "Output saved to 'weather_data.txt'." << endl;
+        cout << "Output saved to 'weather_output.txt'." << endl;
         outputFile.close();
     }
     else {
@@ -28,27 +28,15 @@ void saveOutputToFile(const string& output) {
     }
 }
 
-void saveHistory(const string& history) {
-    ofstream historyFile("history.txt", ios::app);
-    if (historyFile.is_open()) {
-        historyFile << history << endl;
-        cout << "History saved to 'history.txt'." << endl;
-        historyFile.close();
-    }
-    else {
-        cerr << "Unable to save history to file." << endl;
-    }
-}
-
 void viewHistory() {
-    ifstream historyFile("history.txt");
-    if (historyFile.is_open()) {
+    ifstream inputFile("weather_output.txt");
+    if (inputFile.is_open()) {
         string line;
-        cout << "History:" << endl;
-        while (getline(historyFile, line)) {
+        cout << "History of saved and deleted data:" << endl;
+        while (getline(inputFile, line)) {
             cout << line << endl;
         }
-        historyFile.close();
+        inputFile.close();
     }
     else {
         cerr << "Unable to open history file." << endl;
@@ -56,7 +44,7 @@ void viewHistory() {
 }
 
 void deleteHistory() {
-    if (remove("history.txt") != 0) {
+    if (remove("weather_output.txt") != 0) {
         cerr << "Error deleting history file." << endl;
     }
     else {
@@ -64,21 +52,16 @@ void deleteHistory() {
     }
 }
 
-void searchByTime(const Value& time, const Value& hourlyTemperature, const Value& hourlyHumidity, const Value& hourlyWindSpeed) {
-    cout << "Enter time to search (HH:MM format): ";
-    string searchTime;
-    cin >> searchTime;
-
-    for (SizeType i = 0; i < time.Size(); ++i) {
-        if (searchTime == time[i].GetString()) {
-            cout << "Time: " << time[i].GetString() << endl;
-            cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
-            cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
-            cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
-            return;
-        }
+void setFavoriteLocation(const string& location) {
+    ofstream favLocationFile("favorite_location.txt");
+    if (favLocationFile.is_open()) {
+        favLocationFile << location << endl;
+        cout << "Favorite location set to: " << location << endl;
+        favLocationFile.close();
     }
-    cout << "No data available for the specified time." << endl;
+    else {
+        cerr << "Unable to set favorite location." << endl;
+    }
 }
 
 int main() {
@@ -89,6 +72,14 @@ int main() {
 
         cout << "Enter location: ";
         cin >> userInput;
+
+        cout << "Do you want to set this as your favorite location? (Y/N): ";
+        char favChoice;
+        cin >> favChoice;
+
+        if (favChoice == 'Y' || favChoice == 'y') {
+            setFavoriteLocation(userInput);
+        }
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
         geocodingUrl += userInput + "&count=1&language=en&format=json";
@@ -129,9 +120,6 @@ int main() {
                 return 1;
             }
 
-            saveOutputToFile(weatherData);
-            saveHistory(weatherData);
-
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
 
@@ -157,20 +145,36 @@ int main() {
                     const Value& hourlyHumidity = hourly["relativehumidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
-                    cout << "Do you want to search by time or view full data? (S/F): ";
-                    char choice;
-                    cin >> choice;
+                    for (SizeType i = 0; i < time.Size(); ++i) {
+                        cout << "Time: " << time[i].GetString() << endl;
+                        cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
+                        cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
+                        cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
+                        cout << endl;
 
-                    if (choice == 'S' || choice == 's') {
-                        searchByTime(time, hourlyTemperature, hourlyHumidity, hourlyWindSpeed);
-                    }
-                    else {
-                        for (SizeType i = 0; i < time.Size(); ++i) {
-                            cout << "Time: " << time[i].GetString() << endl;
-                            cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
-                            cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
-                            cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
-                            cout << endl;
+                        // Exit the program after printing the first hourly data point
+                        if (i == 0) {
+                            cout << "Do you want to save the output to a file? (Y/N): ";
+                            char choice;
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                saveOutputToFile(weatherData);
+                            }
+
+                            cout << "Do you want to view history? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                viewHistory();
+                            }
+
+                            cout << "Do you want to delete history? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                deleteHistory();
+                            }
+
+                            curl_easy_cleanup(curl);
+                            return 0;
                         }
                     }
                 }
@@ -188,7 +192,6 @@ int main() {
 
     return 0;
 }
-
 
 
 
