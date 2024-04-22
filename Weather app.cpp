@@ -64,6 +64,23 @@ void deleteHistory() {
     }
 }
 
+void searchByTime(const Value& time, const Value& hourlyTemperature, const Value& hourlyHumidity, const Value& hourlyWindSpeed) {
+    cout << "Enter time to search (HH:MM format): ";
+    string searchTime;
+    cin >> searchTime;
+
+    for (SizeType i = 0; i < time.Size(); ++i) {
+        if (searchTime == time[i].GetString()) {
+            cout << "Time: " << time[i].GetString() << endl;
+            cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
+            cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
+            cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
+            return;
+        }
+    }
+    cout << "No data available for the specified time." << endl;
+}
+
 int main() {
     CURL* curl = curl_easy_init();
 
@@ -139,41 +156,21 @@ int main() {
                     const Value& hourlyHumidity = hourly["relativehumidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
-                    for (SizeType i = 0; i < time.Size(); ++i) {
-                        cout << "Time: " << time[i].GetString() << endl;
-                        cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
-                        cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
-                        cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
-                        cout << endl;
+                    cout << "Do you want to search for data at a specific time? (Y/N): ";
+                    char choice;
+                    cin >> choice;
+                    if (choice == 'Y' || choice == 'y') {
+                        searchByTime(time, hourlyTemperature, hourlyHumidity, hourlyWindSpeed);
                     }
-                }
-
-                cout << "Do you want to save the output to a file? (Y/N): ";
-                char choice;
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    saveHistory(weatherData);
-                }
-
-                cout << "Do you want to view history? (Y/N): ";
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    viewHistory();
-                }
-
-                cout << "Do you want to delete history? (Y/N): ";
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    deleteHistory();
-                }
-
-                cout << "Do you want to modify location? (Y/N): ";
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    cout << "Enter new location: ";
-                    cin >> userInput;
-
-                    // Modify location data here as needed
+                    else {
+                        for (SizeType i = 0; i < time.Size(); ++i) {
+                            cout << "Time: " << time[i].GetString() << endl;
+                            cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
+                            cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
+                            cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
+                            cout << endl;
+                        }
+                    }
                 }
             }
             else {
@@ -189,6 +186,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
