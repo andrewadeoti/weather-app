@@ -1,6 +1,6 @@
 
-
-
+//1
+// this only allows to enter and save location to txt then exits.
 //#include <iostream>
 //#include <fstream>
 //#include <curl/curl.h>
@@ -143,8 +143,8 @@
 
 
 
-
-
+// 2
+// only shows latitude and longtitude after user inputs location
 
 //#include <iostream>
 //#include <curl/curl.h>
@@ -215,6 +215,9 @@
 //}
 
 
+
+//3
+//  error code
 //#include <iostream>
 //#include <fstream>
 //#include <curl/curl.h>
@@ -410,7 +413,7 @@
 
 
 
-
+// 4
 
 //#include <iostream>
 //#include <fstream>
