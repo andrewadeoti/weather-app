@@ -17,14 +17,29 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
 }
 
 void saveOutputToFile(const string& output) {
-    ofstream outputFile("weather_output.txt");
+    ofstream outputFile("weather_output.txt", ios::app); // Append mode to append to existing file
     if (outputFile.is_open()) {
-        outputFile << output;
+        outputFile << output << endl;
         cout << "Output saved to 'weather_output.txt'." << endl;
         outputFile.close();
     }
     else {
         cerr << "Unable to save output to file." << endl;
+    }
+}
+
+void viewHistory() {
+    ifstream inputFile("weather_output.txt");
+    if (inputFile.is_open()) {
+        string line;
+        cout << "History of saved and deleted data:" << endl;
+        while (getline(inputFile, line)) {
+            cout << line << endl;
+        }
+        inputFile.close();
+    }
+    else {
+        cerr << "Unable to open history file." << endl;
     }
 }
 
@@ -116,6 +131,13 @@ int main() {
                             if (choice == 'Y' || choice == 'y') {
                                 saveOutputToFile(weatherData);
                             }
+
+                            cout << "Do you want to view history? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                viewHistory();
+                            }
+
                             curl_easy_cleanup(curl);
                             return 0;
                         }
@@ -135,6 +157,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
