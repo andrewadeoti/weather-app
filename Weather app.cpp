@@ -5,16 +5,22 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
+#include <ctime>
 
 using namespace rapidjson;
 using namespace std;
 
-// Function to save output to a file
+size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+    size_t total_size = size * nmemb;
+    output->append(static_cast<char*>(contents), total_size);
+    return total_size;
+}
+
 void saveOutputToFile(const string& output) {
-    ofstream outputFile("weather_output.txt");
+    ofstream outputFile("weather_data.txt");
     if (outputFile.is_open()) {
-        outputFile << output;
-        cout << "Output saved to 'weather_output.txt'." << endl;
+        outputFile << output << endl;
+        cout << "Output saved to 'weather_data.txt'." << endl;
         outputFile.close();
     }
     else {
@@ -22,49 +28,67 @@ void saveOutputToFile(const string& output) {
     }
 }
 
-// Function to view history
-void viewHistory() {
-    ifstream historyFile("weather_output.txt");
+void saveHistory(const string& history) {
+    ofstream historyFile("history.txt", ios::app);
     if (historyFile.is_open()) {
-        cout << "History of saved data:" << endl;
-        cout << historyFile.rdbuf() << endl;
+        historyFile << history << endl;
+        cout << "History saved to 'history.txt'." << endl;
         historyFile.close();
     }
     else {
-        cerr << "No history available." << endl;
+        cerr << "Unable to save history to file." << endl;
     }
 }
 
-// Function to delete history
-void deleteHistory() {
-    if (remove("weather_output.txt") != 0) {
-        cerr << "Error deleting history." << endl;
+void viewHistory() {
+    ifstream historyFile("history.txt");
+    if (historyFile.is_open()) {
+        string line;
+        cout << "History:" << endl;
+        while (getline(historyFile, line)) {
+            cout << line << endl;
+        }
+        historyFile.close();
     }
     else {
-        cout << "History deleted successfully." << endl;
+        cerr << "Unable to open history file." << endl;
     }
 }
 
-// Function to perform HTTP GET request using libcurl
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
-    size_t total_size = size * nmemb;
-    output->append(static_cast<char*>(contents), total_size);
-    return total_size;
+void deleteHistory() {
+    if (remove("history.txt") != 0) {
+        cerr << "Error deleting history file." << endl;
+    }
+    else {
+        cout << "History file deleted successfully." << endl;
+    }
 }
 
-// Main function
+void searchByTime(const Value& time, const Value& hourlyTemperature, const Value& hourlyHumidity, const Value& hourlyWindSpeed) {
+    cout << "Enter time to search (HHMM in 24-hour format): ";
+    string searchTime;
+    cin >> searchTime;
+
+    for (SizeType i = 0; i < time.Size(); ++i) {
+        if (searchTime == time[i].GetString()) {
+            cout << "Time: " << time[i].GetString() << endl;
+            cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
+            cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
+            cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
+            return;
+        }
+    }
+    cout << "No data available for the specified time." << endl;
+}
+
 int main() {
     CURL* curl = curl_easy_init();
 
     if (curl) {
         string userInput;
-        string userTime;
 
         cout << "Enter location: ";
         cin >> userInput;
-
-        cout << "Enter time in 24-hour format (HHMM): ";
-        cin >> userTime;
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
         geocodingUrl += userInput + "&count=1&language=en&format=json";
@@ -85,7 +109,7 @@ int main() {
         Document parsedData;
         parsedData.Parse(response_data.c_str());
 
-        if (parsedData.HasMember("results") && parsedData["results"].IsArray() && !parsedData["results"].Empty()) {
+        if (parsedData.HasMember("results") && parsedData["results"].IsArray() && parsedData["results"].Size() > 0) {
             double latitude = parsedData["results"][0]["latitude"].GetDouble();
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
@@ -104,6 +128,9 @@ int main() {
                 curl_easy_cleanup(curl);
                 return 1;
             }
+
+            saveOutputToFile(weatherData);
+            saveHistory(weatherData);
 
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
@@ -130,23 +157,21 @@ int main() {
                     const Value& hourlyHumidity = hourly["relativehumidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
-                    // Find index of user specified time
-                    int userIndex = -1;
-                    for (SizeType i = 0; i < time.Size(); ++i) {
-                        if (strcmp(time[i].GetString(), userTime.c_str()) == 0) {
-                            userIndex = i;
-                            break;
-                        }
-                    }
+                    cout << "Do you want to search by time or view full data? (S/F): ";
+                    char choice;
+                    cin >> choice;
 
-                    if (userIndex != -1) {
-                        cout << "Time: " << time[userIndex].GetString() << endl;
-                        cout << "Temperature: " << hourlyTemperature[userIndex].GetDouble() << " °C" << endl;
-                        cout << "Humidity: " << hourlyHumidity[userIndex].GetDouble() << "%" << endl;
-                        cout << "Wind Speed: " << hourlyWindSpeed[userIndex].GetDouble() << " m/s" << endl;
+                    if (choice == 'S' || choice == 's') {
+                        searchByTime(time, hourlyTemperature, hourlyHumidity, hourlyWindSpeed);
                     }
                     else {
-                        cerr << "Error: Time not found in data." << endl;
+                        for (SizeType i = 0; i < time.Size(); ++i) {
+                            cout << "Time: " << time[i].GetString() << endl;
+                            cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
+                            cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
+                            cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
+                            cout << endl;
+                        }
                     }
                 }
             }
