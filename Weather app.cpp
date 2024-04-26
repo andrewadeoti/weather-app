@@ -17,10 +17,10 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* out
 }
 
 void saveOutputToFile(const string& output) {
-    ofstream outputFile("weather_output.txt", ios::app); // Append mode to append to existing file
+    ofstream outputFile("weather_data.txt");
     if (outputFile.is_open()) {
         outputFile << output << endl;
-        cout << "Output saved to 'weather_output.txt'." << endl;
+        cout << "Output saved to 'weather_data.txt'." << endl;
         outputFile.close();
     }
     else {
@@ -28,15 +28,27 @@ void saveOutputToFile(const string& output) {
     }
 }
 
+void saveHistory(const string& history) {
+    ofstream historyFile("history.txt", ios::app);
+    if (historyFile.is_open()) {
+        historyFile << history << endl;
+        cout << "History saved to 'history.txt'." << endl;
+        historyFile.close();
+    }
+    else {
+        cerr << "Unable to save history to file." << endl;
+    }
+}
+
 void viewHistory() {
-    ifstream inputFile("weather_output.txt");
-    if (inputFile.is_open()) {
+    ifstream historyFile("history.txt");
+    if (historyFile.is_open()) {
         string line;
-        cout << "History of saved and deleted data:" << endl;
-        while (getline(inputFile, line)) {
+        cout << "History:" << endl;
+        while (getline(historyFile, line)) {
             cout << line << endl;
         }
-        inputFile.close();
+        historyFile.close();
     }
     else {
         cerr << "Unable to open history file." << endl;
@@ -44,7 +56,7 @@ void viewHistory() {
 }
 
 void deleteHistory() {
-    if (remove("weather_output.txt") != 0) {
+    if (remove("history.txt") != 0) {
         cerr << "Error deleting history file." << endl;
     }
     else {
@@ -100,6 +112,8 @@ int main() {
                 return 1;
             }
 
+            saveOutputToFile(weatherData);
+
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
 
@@ -131,32 +145,26 @@ int main() {
                         cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
                         cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
                         cout << endl;
-
-                        // Exit the program after printing the first hourly data point
-                        if (i == 0) {
-                            cout << "Do you want to save the output to a file? (Y/N): ";
-                            char choice;
-                            cin >> choice;
-                            if (choice == 'Y' || choice == 'y') {
-                                saveOutputToFile(weatherData);
-                            }
-
-                            cout << "Do you want to view history? (Y/N): ";
-                            cin >> choice;
-                            if (choice == 'Y' || choice == 'y') {
-                                viewHistory();
-                            }
-
-                            cout << "Do you want to delete history? (Y/N): ";
-                            cin >> choice;
-                            if (choice == 'Y' || choice == 'y') {
-                                deleteHistory();
-                            }
-
-                            curl_easy_cleanup(curl);
-                            return 0;
-                        }
                     }
+                }
+
+                cout << "Do you want to save the output to a file? (Y/N): ";
+                char choice;
+                cin >> choice;
+                if (choice == 'Y' || choice == 'y') {
+                    saveHistory(weatherData);
+                }
+
+                cout << "Do you want to view history? (Y/N): ";
+                cin >> choice;
+                if (choice == 'Y' || choice == 'y') {
+                    viewHistory();
+                }
+
+                cout << "Do you want to delete history? (Y/N): ";
+                cin >> choice;
+                if (choice == 'Y' || choice == 'y') {
+                    deleteHistory();
                 }
             }
             else {
