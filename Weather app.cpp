@@ -5,22 +5,16 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
-#include <ctime>
 
 using namespace rapidjson;
 using namespace std;
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
-    size_t total_size = size * nmemb;
-    output->append(static_cast<char*>(contents), total_size);
-    return total_size;
-}
-
+// Function to save output to a file
 void saveOutputToFile(const string& output) {
-    ofstream outputFile("weather_data.txt");
+    ofstream outputFile("weather_output.txt");
     if (outputFile.is_open()) {
-        outputFile << output << endl;
-        cout << "Output saved to 'weather_data.txt'." << endl;
+        outputFile << output;
+        cout << "Output saved to 'weather_output.txt'." << endl;
         outputFile.close();
     }
     else {
@@ -28,40 +22,33 @@ void saveOutputToFile(const string& output) {
     }
 }
 
-void saveHistory(const string& history) {
-    ofstream historyFile("history.txt", ios::app);
-    if (historyFile.is_open()) {
-        historyFile << history << endl;
-        cout << "History saved to 'history.txt'." << endl;
-        historyFile.close();
-    }
-    else {
-        cerr << "Unable to save history to file." << endl;
-    }
-}
-
+// Function to view history
 void viewHistory() {
-    ifstream historyFile("history.txt");
+    ifstream historyFile("weather_output.txt");
     if (historyFile.is_open()) {
-        string line;
-        cout << "History:" << endl;
-        while (getline(historyFile, line)) {
-            cout << line << endl;
-        }
+        cout << "History of saved data:" << endl;
+        cout << historyFile.rdbuf() << endl;
         historyFile.close();
     }
     else {
-        cerr << "Unable to open history file." << endl;
+        cerr << "No history available." << endl;
     }
 }
 
+// Function to delete history
 void deleteHistory() {
-    if (remove("history.txt") != 0) {
-        cerr << "Error deleting history file." << endl;
+    if (remove("weather_output.txt") != 0) {
+        cerr << "Error deleting history." << endl;
     }
     else {
-        cout << "History file deleted successfully." << endl;
+        cout << "History deleted successfully." << endl;
     }
+}
+
+size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+    size_t total_size = size * nmemb;
+    output->append(static_cast<char*>(contents), total_size);
+    return total_size;
 }
 
 int main() {
@@ -92,7 +79,7 @@ int main() {
         Document parsedData;
         parsedData.Parse(response_data.c_str());
 
-        if (parsedData.HasMember("results") && parsedData["results"].IsArray() && parsedData["results"].Size() > 0) {
+        if (parsedData.HasMember("results") && parsedData["results"].IsArray() && !parsedData["results"].Empty()) {
             double latitude = parsedData["results"][0]["latitude"].GetDouble();
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
@@ -111,8 +98,6 @@ int main() {
                 curl_easy_cleanup(curl);
                 return 1;
             }
-
-            saveOutputToFile(weatherData);
 
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
@@ -145,35 +130,32 @@ int main() {
                         cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
                         cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
                         cout << endl;
+
+                        // Exit the program after printing the first hourly data point
+                        if (i == 0) {
+                            cout << "Do you want to save the output to a file? (Y/N): ";
+                            char choice;
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                saveOutputToFile(weatherData);
+                            }
+
+                            cout << "Do you want to view history? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                viewHistory();
+                            }
+
+                            cout << "Do you want to delete history? (Y/N): ";
+                            cin >> choice;
+                            if (choice == 'Y' || choice == 'y') {
+                                deleteHistory();
+                            }
+
+                            curl_easy_cleanup(curl);
+                            return 0;
+                        }
                     }
-                }
-
-                cout << "Do you want to save the output to a file? (Y/N): ";
-                char choice;
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    saveHistory(weatherData);
-                }
-
-                cout << "Do you want to view history? (Y/N): ";
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    viewHistory();
-                }
-
-                cout << "Do you want to delete history? (Y/N): ";
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    deleteHistory();
-                }
-
-                cout << "Do you want to modify location? (Y/N): ";
-                cin >> choice;
-                if (choice == 'Y' || choice == 'y') {
-                    cout << "Enter new location: ";
-                    cin >> userInput;
-
-                    // Modify location data here as needed
                 }
             }
             else {
@@ -189,6 +171,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
