@@ -5,6 +5,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
+#include <ctime> // Include ctime for localtime
 
 using namespace rapidjson;
 using namespace std;
@@ -31,7 +32,7 @@ int main() {
     CURL* curl = curl_easy_init();
 
     if (curl) {
-        string userInput;
+        string userInput; // Declare userInput here
 
         cout << "Enter location: ";
         cin >> userInput;
