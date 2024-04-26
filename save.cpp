@@ -941,7 +941,7 @@
 
 
 // 4
-
+// HHMM format 
 //#include <iostream>
 //#include <fstream>
 //#include <curl/curl.h>

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <curl/curl.h>
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -8,18 +9,62 @@
 using namespace rapidjson;
 using namespace std;
 
+// Function to save output to a file
+void saveOutputToFile(const string& output) {
+    ofstream outputFile("weather_output.txt");
+    if (outputFile.is_open()) {
+        outputFile << output;
+        cout << "Output saved to 'weather_output.txt'." << endl;
+        outputFile.close();
+    }
+    else {
+        cerr << "Unable to save output to file." << endl;
+    }
+}
+
+// Function to view history
+void viewHistory() {
+    ifstream historyFile("weather_output.txt");
+    if (historyFile.is_open()) {
+        cout << "History of saved data:" << endl;
+        cout << historyFile.rdbuf() << endl;
+        historyFile.close();
+    }
+    else {
+        cerr << "No history available." << endl;
+    }
+}
+
+// Function to delete history
+void deleteHistory() {
+    if (remove("weather_output.txt") != 0) {
+        cerr << "Error deleting history." << endl;
+    }
+    else {
+        cout << "History deleted successfully." << endl;
+    }
+}
+
+// Function to perform HTTP GET request using libcurl
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     size_t total_size = size * nmemb;
     output->append(static_cast<char*>(contents), total_size);
     return total_size;
 }
 
+// Main function
 int main() {
     CURL* curl = curl_easy_init();
+
     if (curl) {
         string userInput;
+        string userTime;
+
         cout << "Enter location: ";
         cin >> userInput;
+
+        cout << "Enter time in 24-hour format (HHMM): ";
+        cin >> userTime;
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
         geocodingUrl += userInput + "&count=1&language=en&format=json";
@@ -44,7 +89,6 @@ int main() {
             double latitude = parsedData["results"][0]["latitude"].GetDouble();
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
-            // Construct the URL for the weather API
             string weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=";
             weatherUrl += to_string(latitude) + "&longitude=" + to_string(longitude) + "&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
 
@@ -77,6 +121,7 @@ int main() {
                 cout << "Wind Speed: " << windSpeed << " m/s" << endl;
                 cout << "Wind Direction: " << windDirection << " degrees" << endl;
                 cout << "Weather Code: " << weatherCode << endl;
+                cout << "Hourly Data:" << endl;
 
                 if (weatherParsedData.HasMember("hourly")) {
                     const Value& hourly = weatherParsedData["hourly"];
@@ -85,13 +130,23 @@ int main() {
                     const Value& hourlyHumidity = hourly["relativehumidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
-                    cout << "Hourly Data:" << endl;
+                    // Find index of user specified time
+                    int userIndex = -1;
                     for (SizeType i = 0; i < time.Size(); ++i) {
-                        cout << "Time: " << time[i].GetString() << endl;
-                        cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
-                        cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
-                        cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
-                        cout << endl;
+                        if (strcmp(time[i].GetString(), userTime.c_str()) == 0) {
+                            userIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (userIndex != -1) {
+                        cout << "Time: " << time[userIndex].GetString() << endl;
+                        cout << "Temperature: " << hourlyTemperature[userIndex].GetDouble() << " °C" << endl;
+                        cout << "Humidity: " << hourlyHumidity[userIndex].GetDouble() << "%" << endl;
+                        cout << "Wind Speed: " << hourlyWindSpeed[userIndex].GetDouble() << " m/s" << endl;
+                    }
+                    else {
+                        cerr << "Error: Time not found in data." << endl;
                     }
                 }
             }
