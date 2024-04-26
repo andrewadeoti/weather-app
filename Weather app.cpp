@@ -166,6 +166,15 @@ int main() {
                 if (choice == 'Y' || choice == 'y') {
                     deleteHistory();
                 }
+
+                cout << "Do you want to modify location? (Y/N): ";
+                cin >> choice;
+                if (choice == 'Y' || choice == 'y') {
+                    cout << "Enter new location: ";
+                    cin >> userInput;
+
+                    // Modify location data here as needed
+                }
             }
             else {
                 cerr << "Error: Unable to parse weather data response." << endl;
