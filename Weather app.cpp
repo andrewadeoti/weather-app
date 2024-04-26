@@ -56,9 +56,13 @@ int main() {
 
     if (curl) {
         string userInput;
+        string userTime;
 
         cout << "Enter location: ";
         cin >> userInput;
+
+        cout << "Enter time in 24-hour format (HHMM): ";
+        cin >> userTime;
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
         geocodingUrl += userInput + "&count=1&language=en&format=json";
@@ -124,37 +128,23 @@ int main() {
                     const Value& hourlyHumidity = hourly["relativehumidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
+                    // Find index of user specified time
+                    int userIndex = -1;
                     for (SizeType i = 0; i < time.Size(); ++i) {
-                        cout << "Time: " << time[i].GetString() << endl;
-                        cout << "Temperature: " << hourlyTemperature[i].GetDouble() << " °C" << endl;
-                        cout << "Humidity: " << hourlyHumidity[i].GetDouble() << "%" << endl;
-                        cout << "Wind Speed: " << hourlyWindSpeed[i].GetDouble() << " m/s" << endl;
-                        cout << endl;
-
-                        // Exit the program after printing the first hourly data point
-                        if (i == 0) {
-                            cout << "Do you want to save the output to a file? (Y/N): ";
-                            char choice;
-                            cin >> choice;
-                            if (choice == 'Y' || choice == 'y') {
-                                saveOutputToFile(weatherData);
-                            }
-
-                            cout << "Do you want to view history? (Y/N): ";
-                            cin >> choice;
-                            if (choice == 'Y' || choice == 'y') {
-                                viewHistory();
-                            }
-
-                            cout << "Do you want to delete history? (Y/N): ";
-                            cin >> choice;
-                            if (choice == 'Y' || choice == 'y') {
-                                deleteHistory();
-                            }
-
-                            curl_easy_cleanup(curl);
-                            return 0;
+                        if (strcmp(time[i].GetString(), userTime.c_str()) == 0) {
+                            userIndex = i;
+                            break;
                         }
+                    }
+
+                    if (userIndex != -1) {
+                        cout << "Time: " << time[userIndex].GetString() << endl;
+                        cout << "Temperature: " << hourlyTemperature[userIndex].GetDouble() << " °C" << endl;
+                        cout << "Humidity: " << hourlyHumidity[userIndex].GetDouble() << "%" << endl;
+                        cout << "Wind Speed: " << hourlyWindSpeed[userIndex].GetDouble() << " m/s" << endl;
+                    }
+                    else {
+                        cerr << "Error: Time not found in data." << endl;
                     }
                 }
             }
@@ -171,6 +161,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
