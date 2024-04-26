@@ -5,7 +5,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
-#include <ctime> // Include ctime for localtime
+#include <ctime>
 
 using namespace rapidjson;
 using namespace std;
@@ -32,7 +32,7 @@ int main() {
     CURL* curl = curl_easy_init();
 
     if (curl) {
-        string userInput; // Declare userInput here
+        string userInput;
 
         cout << "Enter location: ";
         cin >> userInput;
@@ -56,7 +56,7 @@ int main() {
         Document parsedData;
         parsedData.Parse(response_data.c_str());
 
-        if (parsedData.HasMember("results") && parsedData["results"].IsArray() && !parsedData["results"].Empty()) {
+        if (parsedData.HasMember("results") && parsedData["results"].IsArray() && parsedData["results"].Size() > 0) {
             double latitude = parsedData["results"][0]["latitude"].GetDouble();
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
@@ -135,6 +135,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
