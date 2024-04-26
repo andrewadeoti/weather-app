@@ -1,13 +1,16 @@
+//weather.h
 #pragma once
+#ifndef WEATHER_H
+#define WEATHER_H
+
 #include "rapidjson/document.h"
 #include <iostream>
 
-using namespace rapidjson;
-using namespace std;
-
 class Weather {
 public:
-    void displayHourlyWeather(const Value& hourly);
-    void displayDailyWeather(const Value& daily);
-    void displayWeatherData(const Document& weatherParsedData);
+    void displayHourlyWeather(const rapidjson::Value& hourly);
+    void displayDailyWeather(const rapidjson::Value& daily);
+    void displayWeatherData(const rapidjson::Document& weatherParsedData);
 };
+
+#endif // WEATHER_H

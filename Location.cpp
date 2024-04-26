@@ -1,104 +1,92 @@
-#include <iostream>
 #include "Location.h"
+#include <iostream>
 
-using namespace std;
+std::vector<Location> locations; // Define vector to store locations
 
-// Define the locations vector
-vector<Location> locations;
-
-// Function to add a new location
-void LocationManager::addNewLocation() {
+void Location::addNewLocation() {
     Location newLocation;
 
-    // Prompt user to enter location details
-    cout << "Enter location ID: ";
-    cin >> newLocation.id;
+    std::cout << "Enter location ID: ";
+    std::cin >> newLocation.id;
 
-    cout << "Enter location name: ";
-    cin.ignore();
-    getline(cin, newLocation.name);
+    std::cout << "Enter location name: ";
+    std::cin.ignore();
+    std::getline(std::cin, newLocation.name);
 
-    cout << "Enter latitude: ";
-    cin >> newLocation.latitude;
+    std::cout << "Enter latitude: ";
+    std::cin >> newLocation.latitude;
 
-    cout << "Enter longitude: ";
-    cin >> newLocation.longitude;
+    std::cout << "Enter longitude: ";
+    std::cin >> newLocation.longitude;
 
-    // Add the new location to the vector
     locations.push_back(newLocation);
 
-    cout << "New location added successfully." << endl;
+    std::cout << "New location added successfully." << std::endl;
 }
 
-// Function to modify location data
-void LocationManager::modifyLocationData() {
+void Location::modifyLocationData() {
     int id;
-    cout << "Enter location ID to modify: ";
-    cin >> id;
+    std::cout << "Enter location ID to modify: ";
+    std::cin >> id;
 
-    // Find location with the given ID
     for (auto& loc : locations) {
         if (loc.id == id) {
-            // Prompt user to enter new details
-            cout << "Enter new location name: ";
-            cin.ignore();
-            getline(cin, loc.name);
+            std::cout << "Enter new location name: ";
+            std::cin.ignore();
+            std::getline(std::cin, loc.name);
 
-            cout << "Enter new latitude: ";
-            cin >> loc.latitude;
+            std::cout << "Enter new latitude: ";
+            std::cin >> loc.latitude;
 
-            cout << "Enter new longitude: ";
-            cin >> loc.longitude;
+            std::cout << "Enter new longitude: ";
+            std::cin >> loc.longitude;
 
-            cout << "Location data modified successfully." << endl;
+            std::cout << "Location data modified successfully." << std::endl;
             return;
         }
     }
 
-    cout << "Location with ID " << id << " not found." << endl;
+    std::cout << "Location with ID " << id << " not found." << std::endl;
 }
 
-// Function to remove a location
-void LocationManager::removeLocation() {
+void Location::removeLocation() {
     int choice;
-    cout << "Select removal option:" << endl;
-    cout << "1. Remove by ID" << endl;
-    cout << "2. Remove by Name" << endl;
-    cout << "Enter your choice: ";
-    cin >> choice;
+    std::cout << "Select removal option:" << std::endl;
+    std::cout << "1. Remove by ID" << std::endl;
+    std::cout << "2. Remove by Name" << std::endl;
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
 
     if (choice == 1) {
         int id;
-        cout << "Enter location ID to remove: ";
-        cin >> id;
+        std::cout << "Enter location ID to remove: ";
+        std::cin >> id;
 
-        // Find and remove location with the given ID
         for (auto it = locations.begin(); it != locations.end(); ++it) {
             if (it->id == id) {
                 locations.erase(it);
-                cout << "Location with ID " << id << " removed successfully." << endl;
+                std::cout << "Location with ID " << id << " removed successfully." << std::endl;
                 return;
             }
         }
-        cout << "Location with ID " << id << " not found." << endl;
+        std::cout << "Location with ID " << id << " not found." << std::endl;
     }
     else if (choice == 2) {
-        string name;
-        cout << "Enter location name to remove: ";
-        cin.ignore();
-        getline(cin, name);
+        std::string name;
+        std::cout << "Enter location name to remove: ";
+        std::cin.ignore();
+        std::getline(std::cin, name);
 
-        // Find and remove location with the given name
         for (auto it = locations.begin(); it != locations.end(); ++it) {
             if (it->name == name) {
                 locations.erase(it);
-                cout << "Location \"" << name << "\" removed successfully." << endl;
+                std::cout << "Location \"" << name << "\" removed successfully." << std::endl;
                 return;
             }
         }
-        cout << "Location \"" << name << "\" not found." << endl;
+        std::cout << "Location \"" << name << "\" not found." << std::endl;
     }
     else {
-        cout << "Invalid choice." << endl;
+        std::cout << "Invalid choice." << std::endl;
     }
 }
