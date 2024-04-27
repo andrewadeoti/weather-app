@@ -189,7 +189,7 @@ int main() {
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
             string weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=";
-            weatherUrl += to_string(latitude) + "&longitude=" + to_string(longitude) + "&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
+            weatherUrl += to_string(latitude) + "&longitude=" + to_string(longitude) + "&current_weather=true&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,daylight_duration,sunshine_duration,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration";
             curl_easy_setopt(curl, CURLOPT_URL, weatherUrl.c_str());
             string weatherData;
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -200,6 +200,9 @@ int main() {
                 curl_easy_cleanup(curl);
                 return 1;
             }
+
+            cout << "Raw weather data:" << endl;
+            cout << weatherData << endl;
 
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
@@ -222,7 +225,7 @@ int main() {
                     const Value& hourly = weatherParsedData["hourly"];
                     const Value& time = hourly["time"];
                     const Value& hourlyTemperature = hourly["temperature_2m"];
-                    const Value& hourlyHumidity = hourly["relativehumidity_2m"];
+                    const Value& hourlyHumidity = hourly["relative_humidity_2m"];
                     const Value& hourlyWindSpeed = hourly["windspeed_10m"];
 
                     for (SizeType i = 0; i < time.Size(); ++i) {
