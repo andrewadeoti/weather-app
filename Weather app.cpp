@@ -11,16 +11,38 @@
 using namespace rapidjson;
 using namespace std;
 
-// Write callback function for libcurl
+// Data Structures
+struct Location {
+    string id;
+    string name;
+    double latitude;
+    double longitude;
+    bool is_favorite;
+};
+
+struct WeatherData {
+    Location location;
+    time_t timestamp;
+    double temperature;
+    double precipitation;
+    double wind_speed;
+    double wind_direction;
+    double humidity;
+    double cloud_cover;
+    double pressure;
+    double solar_radiation;
+    double air_quality_index;
+};
+
+// Utility Functions
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     size_t total_size = size * nmemb;
-    output->append(static_cast<char*>(contents), total_size);     
+    output->append(static_cast<char*>(contents), total_size);
     return total_size;
 }
 
-// Function to save output to file
 void saveOutputToFile(const string& output) {
-    ofstream outputFile("weather_output.txt", ios::app); // Append mode to append to existing file
+    ofstream outputFile("weather_output.txt", ios::app);
     if (outputFile.is_open()) {
         outputFile << output << endl;
         cout << "Output saved to 'weather_output.txt'." << endl;
@@ -31,7 +53,6 @@ void saveOutputToFile(const string& output) {
     }
 }
 
-// Function to view history
 void viewHistory() {
     ifstream inputFile("weather_output.txt");
     if (inputFile.is_open()) {
@@ -47,7 +68,6 @@ void viewHistory() {
     }
 }
 
-// Function to delete history
 void deleteHistory() {
     if (remove("weather_output.txt") != 0) {
         cerr << "Error deleting history file." << endl;
@@ -57,7 +77,6 @@ void deleteHistory() {
     }
 }
 
-// Function to set favorite location
 void setFavoriteLocation(const string& location) {
     ofstream favLocationFile("favorite_location.txt", ios::app);
     if (favLocationFile.is_open()) {
@@ -70,7 +89,6 @@ void setFavoriteLocation(const string& location) {
     }
 }
 
-// Function to view favorite locations
 void viewFavoriteLocations() {
     ifstream favLocationFile("favorite_location.txt");
     if (favLocationFile.is_open()) {
@@ -86,11 +104,9 @@ void viewFavoriteLocations() {
     }
 }
 
-// Function to delete favorite location
 void deleteFavoriteLocation(const string& locationToDelete) {
     ifstream inputFile("favorite_location.txt");
     ofstream tempFile("temp.txt");
-
     if (inputFile.is_open() && tempFile.is_open()) {
         string location;
         while (getline(inputFile, location)) {
@@ -100,17 +116,14 @@ void deleteFavoriteLocation(const string& locationToDelete) {
         }
         inputFile.close();
         tempFile.close();
-
         if (remove("favorite_location.txt") != 0) {
             cerr << "Error deleting favorite location." << endl;
             return;
         }
-
         if (rename("temp.txt", "favorite_location.txt") != 0) {
             cerr << "Error renaming temp file." << endl;
             return;
         }
-
         cout << "Favorite location deleted successfully." << endl;
     }
     else {
@@ -118,7 +131,6 @@ void deleteFavoriteLocation(const string& locationToDelete) {
     }
 }
 
-// Function to delete all favorite locations
 void deleteAllFavoriteLocations() {
     if (remove("favorite_location.txt") != 0) {
         cerr << "Error deleting all favorite locations." << endl;
@@ -130,17 +142,14 @@ void deleteAllFavoriteLocations() {
 
 int main() {
     CURL* curl = curl_easy_init();
-
     if (curl) {
         string userInput;
-
         cout << "Enter location: ";
         cin >> userInput;
 
         cout << "Do you want to set this as your favorite location? (Y/N): ";
         char favChoice;
         cin >> favChoice;
-
         if (favChoice == 'Y' || favChoice == 'y') {
             setFavoriteLocation(userInput);
         }
@@ -148,20 +157,16 @@ int main() {
         cout << "Do you want to view your favorite locations? (Y/N): ";
         char viewChoice;
         cin >> viewChoice;
-
         if (viewChoice == 'Y' || viewChoice == 'y') {
             viewFavoriteLocations();
         }
 
         string geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search?name=";
         geocodingUrl += userInput + "&count=1&language=en&format=json";
-
         curl_easy_setopt(curl, CURLOPT_URL, geocodingUrl.c_str());
-
         string response_data;
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
-
         CURLcode res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
@@ -171,20 +176,16 @@ int main() {
 
         Document parsedData;
         parsedData.Parse(response_data.c_str());
-
         if (parsedData.HasMember("results") && parsedData["results"].IsArray() && parsedData["results"].Size() > 0) {
             double latitude = parsedData["results"][0]["latitude"].GetDouble();
             double longitude = parsedData["results"][0]["longitude"].GetDouble();
 
             string weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=";
             weatherUrl += to_string(latitude) + "&longitude=" + to_string(longitude) + "&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
-
             curl_easy_setopt(curl, CURLOPT_URL, weatherUrl.c_str());
-
             string weatherData;
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &weatherData);
-
             res = curl_easy_perform(curl);
             if (res != CURLE_OK) {
                 fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
@@ -194,7 +195,6 @@ int main() {
 
             Document weatherParsedData;
             weatherParsedData.Parse(weatherData.c_str());
-
             if (weatherParsedData.HasMember("current_weather")) {
                 const Value& currentWeather = weatherParsedData["current_weather"];
                 double temperature = currentWeather["temperature"].GetDouble();
@@ -208,8 +208,8 @@ int main() {
                 cout << "Wind Speed: " << windSpeed << " m/s" << endl;
                 cout << "Wind Direction: " << windDirection << " degrees" << endl;
                 cout << "Weather Code: " << weatherCode << endl;
-                cout << "Hourly Data:" << endl;
 
+                cout << "Hourly Data:" << endl;
                 if (weatherParsedData.HasMember("hourly")) {
                     const Value& hourly = weatherParsedData["hourly"];
                     const Value& time = hourly["time"];
