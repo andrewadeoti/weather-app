@@ -8,6 +8,12 @@
 #include <ctime>
 #include <vector>
 
+#ifdef _WIN32
+#include <io.h> // For _open_osfhandle on Windows
+#else
+#include <fcntl.h>  // For open on non-Windows systems
+#endif
+
 using namespace rapidjson;
 using namespace std;
 
@@ -35,12 +41,14 @@ struct WeatherData {
 };
 
 // Utility Functions
+// Write callback function for libcurl
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     size_t total_size = size * nmemb;
     output->append(static_cast<char*>(contents), total_size);
     return total_size;
 }
 
+// Function to save output to file
 void saveOutputToFile(const string& output) {
     ofstream outputFile("weather_output.txt", ios::app);
     if (outputFile.is_open()) {
