@@ -11,12 +11,14 @@
 using namespace rapidjson;
 using namespace std;
 
+// Write callback function for libcurl
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     size_t total_size = size * nmemb;
-    output->append(static_cast<char*>(contents), total_size);
+    output->append(static_cast<char*>(contents), total_size);     
     return total_size;
 }
 
+// Function to save output to file
 void saveOutputToFile(const string& output) {
     ofstream outputFile("weather_output.txt", ios::app); // Append mode to append to existing file
     if (outputFile.is_open()) {
@@ -29,6 +31,7 @@ void saveOutputToFile(const string& output) {
     }
 }
 
+// Function to view history
 void viewHistory() {
     ifstream inputFile("weather_output.txt");
     if (inputFile.is_open()) {
@@ -44,6 +47,7 @@ void viewHistory() {
     }
 }
 
+// Function to delete history
 void deleteHistory() {
     if (remove("weather_output.txt") != 0) {
         cerr << "Error deleting history file." << endl;
@@ -53,6 +57,7 @@ void deleteHistory() {
     }
 }
 
+// Function to set favorite location
 void setFavoriteLocation(const string& location) {
     ofstream favLocationFile("favorite_location.txt", ios::app);
     if (favLocationFile.is_open()) {
@@ -65,6 +70,7 @@ void setFavoriteLocation(const string& location) {
     }
 }
 
+// Function to view favorite locations
 void viewFavoriteLocations() {
     ifstream favLocationFile("favorite_location.txt");
     if (favLocationFile.is_open()) {
@@ -80,6 +86,7 @@ void viewFavoriteLocations() {
     }
 }
 
+// Function to delete favorite location
 void deleteFavoriteLocation(const string& locationToDelete) {
     ifstream inputFile("favorite_location.txt");
     ofstream tempFile("temp.txt");
@@ -111,6 +118,7 @@ void deleteFavoriteLocation(const string& locationToDelete) {
     }
 }
 
+// Function to delete all favorite locations
 void deleteAllFavoriteLocations() {
     if (remove("favorite_location.txt") != 0) {
         cerr << "Error deleting all favorite locations." << endl;
@@ -271,6 +279,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
