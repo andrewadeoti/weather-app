@@ -11,3 +11,4 @@ iceland
 france
 niger
 london
+haiti
