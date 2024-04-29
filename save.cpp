@@ -1,3 +1,315 @@
+//#include <iostream>
+//
+//using namespace std;
+//
+//void mainMenu() {
+//    int choice;
+//    bool confirmed = false;
+//
+//    do {
+//        cout << "===== Main Menu =====" << endl;
+//        cout << "1. Back to Main Menu" << endl;
+//        cout << "2. Add Favorite" << endl;
+//        cout << "3. Delete Favorites" << endl;
+//        cout << "4. View History" << endl;
+//        cout << "5. Save" << endl;
+//        cout << "6. Delete" << endl;
+//        cout << "7. Check Weather Data" << endl;
+//        cout << "8. Exit" << endl;
+//
+//        cout << "Enter your choice (1-8): ";
+//        cin >> choice;
+//
+//        // Prompt for confirmation
+//        cout << "Are you sure you want to select option " << choice << "? (Y/N): ";
+//        char confirmChoice;
+//        cin >> confirmChoice;
+//
+//        if (confirmChoice == 'Y' || confirmChoice == 'y') {
+//            confirmed = true;
+//        }
+//        else {
+//            confirmed = false;
+//        }
+//    } while (!confirmed);
+//
+//    // Perform actions based on user's confirmed choice
+//    switch (choice) {
+//    case 1:
+//        // Add code to handle Back to Main Menu option
+//        break;
+//    case 2:
+//        // Add code to handle Add Favorite option
+//        break;
+//    case 3:
+//        // Add code to handle Delete Favorites option
+//        break;
+//    case 4:
+//        // Add code to handle View History option
+//        break;
+//    case 5:
+//        // Add code to handle Save option
+//        break;
+//    case 6:
+//        // Add code to handle Delete option
+//        break;
+//    case 7:
+//        // Add code to handle Check Weather Data option
+//        break;
+//    case 8:
+//        // Add code to handle Exit option
+//        break;
+//    default:
+//        cout << "Invalid choice. Please enter a number between 1 and 8." << endl;
+//        break;
+//    }
+//}
+
+
+
+//#include <iostream>
+//#include "menu.h"
+//
+//using namespace std;
+//
+//void mainMenu() {
+//    int choice;
+//    bool confirmed = false;
+//
+//    do {
+//        cout << "===== Main Menu =====" << endl;
+//        cout << "1. Back to Main Menu" << endl;
+//        cout << "2. Add Favorite" << endl;
+//        cout << "3. Delete Favorites" << endl;
+//        cout << "4. View History" << endl;
+//        cout << "5. Save" << endl;
+//        cout << "6. Delete" << endl;
+//        cout << "7. Check Weather Data" << endl;
+//        cout << "8. Exit" << endl;
+//
+//        cout << "Enter your choice (1-8): ";
+//        cin >> choice;
+//
+//        // Prompt for confirmation
+//        cout << "Are you sure you want to select option " << choice << "? (Y/N): ";
+//        char confirmChoice;
+//        cin >> confirmChoice;
+//
+//        if (confirmChoice == 'Y' || confirmChoice == 'y') {
+//            confirmed = true;
+//        }
+//        else {
+//            confirmed = false;
+//        }
+//    } while (!confirmed);
+//
+//    // Perform actions based on user's confirmed choice
+//    switch (choice) {
+//    case 1:
+//        // Add code to handle Back to Main Menu option
+//        break;
+//    case 2:
+//        // Add code to handle Add Favorite option
+//        break;
+//    case 3:
+//        // Add code to handle Delete Favorites option
+//        break;
+//    case 4:
+//        // Add code to handle View History option
+//        break;
+//    case 5:
+//        // Add code to handle Save option
+//        break;
+//    case 6:
+//        // Add code to handle Delete option
+//        break;
+//    case 7:
+//        // Add code to handle Check Weather Data option
+//        break;
+//    case 8:
+//        // Add code to handle Exit option
+//        break;
+//    default:
+//        cout << "Invalid choice. Please enter a number between 1 and 8." << endl;
+//        break;
+//    }
+//}
+
+
+//#include <iostream>
+//#include <fstream>
+//#include <curl/curl.h>
+//#include "rapidjson/document.h"
+//#include "rapidjson/writer.h"
+//#include "rapidjson/stringbuffer.h"
+//#include <string>
+//#include <ctime>
+//#include <vector>
+//
+//#ifdef _WIN32
+//#include <io.h>
+//#else
+//#include <fcntl.h>
+//#endif
+//
+//using namespace rapidjson;
+//using namespace std;
+//
+//struct Location {
+//    string id;
+//    string name;
+//    double latitude;
+//    double longitude;
+//    bool is_favorite;
+//};
+//
+//struct WeatherData {
+//    Location location;
+//    time_t timestamp;
+//    double temperature;
+//    double precipitation;
+//    double wind_speed;
+//    double wind_direction;
+//    double humidity;
+//    double cloud_cover;
+//    double pressure;
+//    double solar_radiation;
+//    double air_quality_index;
+//};
+//
+//size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+//    size_t total_size = size * nmemb;
+//    output->append(static_cast<char*>(contents), total_size);
+//    return total_size;
+//}
+//
+//void saveOutputToFile(const string& output) {
+//    ofstream outputFile("weather_output.txt", ios::app);
+//    if (outputFile.is_open()) {
+//        outputFile << output << endl;
+//        cout << "Output saved to 'weather_output.txt'." << endl;
+//        outputFile.close();
+//    }
+//    else {
+//        cerr << "Unable to save output to file." << endl;
+//    }
+//}
+//
+//void viewHistory() {
+//    ifstream inputFile("weather_output.txt");
+//    if (inputFile.is_open()) {
+//        string line;
+//        cout << "History of saved and deleted data:" << endl;
+//        while (getline(inputFile, line)) {
+//            cout << line << endl;
+//        }
+//        inputFile.close();
+//    }
+//    else {
+//        cerr << "Unable to open history file." << endl;
+//    }
+//}
+//
+//void deleteHistory() {
+//    if (remove("weather_output.txt") != 0) {
+//        cerr << "Error deleting history file." << endl;
+//    }
+//    else {
+//        cout << "History file deleted successfully." << endl;
+//    }
+//}
+//
+//void setFavoriteLocation(const string& location) {
+//    ofstream favLocationFile("favorite_location.txt", ios::app);
+//    if (favLocationFile.is_open()) {
+//        favLocationFile << location << endl;
+//        cout << "Favorite location set to: " << location << endl;
+//        favLocationFile.close();
+//    }
+//    else {
+//        cerr << "Unable to set favorite location." << endl;
+//    }
+//}
+//
+//void viewFavoriteLocations() {
+//    ifstream favLocationFile("favorite_location.txt");
+//    if (favLocationFile.is_open()) {
+//        string location;
+//        cout << "Your favorite locations:" << endl;
+//        while (getline(favLocationFile, location)) {
+//            cout << location << endl;
+//        }
+//        favLocationFile.close();
+//    }
+//    else {
+//        cerr << "Unable to open favorite location file." << endl;
+//    }
+//}
+//
+//void deleteFavoriteLocation(const string& locationToDelete) {
+//    ifstream inputFile("favorite_location.txt");
+//    ofstream tempFile("temp.txt");
+//    if (inputFile.is_open() && tempFile.is_open()) {
+//        string location;
+//        while (getline(inputFile, location)) {
+//            if (location != locationToDelete) {
+//                tempFile << location << endl;
+//            }
+//        }
+//        inputFile.close();
+//        tempFile.close();
+//        if (remove("favorite_location.txt") != 0) {
+//            cerr << "Error deleting favorite location." << endl;
+//            return;
+//        }
+//        if (rename("temp.txt", "favorite_location.txt") != 0) {
+//            cerr << "Error renaming temp file." << endl;
+//            return;
+//        }
+//        cout << "Favorite location deleted successfully." << endl;
+//    }
+//    else {
+//        cerr << "Unable to open files for deletion." << endl;
+//    }
+//}
+//
+//void deleteAllFavoriteLocations() {
+//    if (remove("favorite_location.txt") != 0) {
+//        cerr << "Error deleting all favorite locations." << endl;
+//    }
+//    else {
+//        cout << "All favorite locations deleted successfully." << endl;
+//    }
+//}
+//
+//void outputApiFunctions() {
+//    cout << "Functions included in the APIs:" << endl;
+//    cout << "https://api.open-meteo.com/v1/forecast?latitude= Functions:" << endl;
+//    cout << "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m" << endl;
+//    cout << "hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weather_code,pressure_msl,surface_pressure,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,evapotranspiration,et0_fao_evapotranspiration,vapour_pressure_deficit,wind_speed_10m,wind_speed_80m,wind_speed_120m,wind_speed_180m,wind_direction_10m,wind_direction_80m,wind_direction_120m,wind_direction_180m,wind_gusts_10m,temperature_80m,temperature_120m,temperature_180m,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm,soil_moisture_9_to_27cm,soil_moisture_27_to_81cm" << endl;
+//    cout << "daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,daylight_duration,sunshine_duration,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration" << endl;
+//    cout << endl;
+//
+//    cout << "https://archive-api.open-meteo.com/v1/archive?latitude= Functions:" << endl;
+//    cout << "hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation,rain,snowfall,snow_depth,weather_code,pressure_msl,surface_pressure,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,et0_fao_evapotranspiration,vapour_pressure_deficit,wind_speed_10m,wind_speed_100m,wind_direction_10m,wind_direction_100m,wind_gusts_10m,soil_temperature_0_to_7cm,soil_temperature_7_to_28cm,soil_temperature_28_to_100cm,soil_temperature_100_to_255cm,soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm,soil_moisture_100_to_255cm" << endl;
+//    cout << "daily=weather_code,temperature_2m_max,temperature_2m_min,temperature_2m_mean,apparent_temperature_max,apparent_temperature_min,apparent_temperature_mean,sunrise,sunset,daylight_duration,sunshine_duration,precipitation_sum,rain_sum,snowfall_sum,precipitation_hours,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration" << endl;
+//    cout << endl;
+//
+//    cout << "https://api.open-meteo.com/v1/forecast?latitude= Functions:" << endl;
+//    cout << "(No specific functions provided)" << endl;
+//    cout << endl;
+//
+//    cout << "https://geocoding-api.open-meteo.com/v1/search?name= Functions:" << endl;
+//    cout << "(No specific functions provided)" << endl;
+//    cout << endl;
+//}
+//
+//int main() {
+//    outputApiFunctions();
+//    return 0;
+//}
+
+
 //#pragma once
 //#ifndef MENU_H
 //#define MENU_H
@@ -966,3 +1278,529 @@
 //
 //    return 0;
 //}
+
+//First code  
+
+
+
+//#include <iostream>    
+
+
+
+//#include <curl/curl.h>    
+
+
+
+//#include "rapidjson/document.h"    
+
+
+
+//  
+
+
+
+//using namespace rapidjson;  
+
+
+
+//  
+
+
+
+//// Callback function to write the received data    
+
+
+
+//  
+
+
+
+//size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {  
+
+
+
+//  
+
+
+
+//    size_t total_size = size * nmemb;  
+
+
+
+//  
+
+
+
+//    output->append(static_cast<char*>(contents), total_size);  
+
+
+
+//  
+
+
+
+//    return total_size;  
+
+
+
+//  
+
+
+
+//}  
+
+
+
+//  
+
+
+
+//void main() {  
+
+
+
+//  
+
+
+
+//    // Initialize libcurl    
+
+
+
+//  
+
+
+
+//    CURL* curl = curl_easy_init();  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//    if (curl) {  
+
+
+
+//  
+
+
+
+//        // Set the URL to Google's homepage    
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        const char* url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";  
+
+
+
+//  
+
+
+
+//        curl_easy_setopt(curl, CURLOPT_URL, url);  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        // Set the callback function to handle received data    
+
+
+
+//  
+
+
+
+//        std::string response_data;  
+
+
+
+//  
+
+
+
+//        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);  
+
+
+
+//  
+
+
+
+//        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);  
+
+
+
+//  
+
+
+
+//        // Perform the HTTP GET request    
+
+
+
+//  
+
+
+
+//        CURLcode res = curl_easy_perform(curl);  
+
+
+
+//  
+
+
+
+//        // Check for errors    
+
+
+
+//  
+
+
+
+//        if (res != CURLE_OK) {  
+
+
+
+//  
+
+
+
+//            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));  
+
+
+
+//  
+
+
+
+//        }  
+
+
+
+//  
+
+
+
+//        else {  
+
+
+
+//  
+
+
+
+//            long http_response_code;  
+
+
+
+//  
+
+
+
+//            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_response_code);  
+
+
+
+//  
+
+
+
+//            std::cout << "HTTP Response Code: " << http_response_code << std::endl;  
+
+
+
+//  
+
+
+
+//        }  
+
+
+
+//  
+
+
+
+//        // Parse the JSON string    
+
+
+
+//  
+
+
+
+//        Document parsedData;  
+
+
+
+//  
+
+
+
+//        parsedData.Parse(response_data.c_str());  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        if (parsedData.HasParseError()) {  
+
+
+
+//  
+
+
+
+//            std::cerr << "Error parsing JSON." << std::endl;  
+
+
+
+//  
+
+
+
+//        }  
+
+
+
+//        // Access specific information    
+
+
+
+//  
+
+
+
+//        double latitude = parsedData["latitude"].GetDouble();  
+
+
+
+//  
+
+
+
+//        double longitude = parsedData["longitude"].GetDouble();  
+
+
+
+//  
+
+
+
+//        double currentTemperature = parsedData["current"]["temperature_2m"].GetDouble();  
+
+
+
+//  
+
+
+
+//        double currentWindSpeed = parsedData["current"]["wind_speed_10m"].GetDouble();  
+
+
+
+//  
+
+
+
+//        // Access hourly data    
+
+
+
+//  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        const Value& hourlyTime = parsedData["hourly"]["time"];  
+
+
+
+//  
+
+
+
+//        const Value& hourlyTemperature = parsedData["hourly"]["temperature_2m"];  
+
+
+
+//  
+
+
+
+//        const Value& hourlyHumidity = parsedData["hourly"]["relative_humidity_2m"];  
+
+
+
+//  
+
+
+
+//        const Value& hourlyWindSpeed = parsedData["hourly"]["wind_speed_10m"];  
+
+
+
+//  
+
+
+
+//        // Output values (replace with your desired processing)    
+
+
+
+//  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        std::cout << "Latitude: " << latitude << std::endl;  
+
+
+
+//  
+
+
+
+//        std::cout << "Longitude: " << longitude << std::endl;  
+
+
+
+//  
+
+
+
+//        std::cout << "Current Temperature: " << currentTemperature << std::endl;  
+
+
+
+//  
+
+
+
+//        std::cout << "Current Wind Speed: " << currentWindSpeed << std::endl;  
+
+
+
+//  
+
+
+
+//        std::cout << "hourly" << std::endl;  
+
+
+
+//  
+
+
+
+//        std::cout << "Time: " << hourlyTime[0].GetString() << std::endl;  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        std::cout << "Temperature: " << hourlyTemperature[0].GetDouble() << std::endl;  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        std::cout << "Humidity: " << hourlyHumidity[0].GetDouble() << std::endl;  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        std::cout << "WindSpeed: " << hourlyWindSpeed[0].GetDouble() << std::endl;  
+
+
+
+//  
+
+
+
+//  
+
+
+
+//        // Cleanup    
+
+
+
+//  
+
+
+
+//        curl_easy_cleanup(curl);  
+
+
+
+//  
+
+
+
+//    }  
+
+
+
+//} 

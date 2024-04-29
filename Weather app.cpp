@@ -8,11 +8,6 @@
 #include <ctime>     // Time manipulation
 #include <vector>    // Dynamic array container
 
-#ifdef _WIN32
-#include <io.h>  // For _open_osfhandle on Windows
-#else
-#include <fcntl.h>  // For open on non-Windows systems
-#endif
 
 using namespace rapidjson;  // Namespace for rapidjson library
 using namespace std;        // Namespace for standard library
@@ -307,8 +302,16 @@ int main() {
 
 
 
-//Here's how the code works:
-//
+
+
+
+
+
+
+
+
+
+
 //Header Includes : Includes necessary header files such as <iostream>, <fstream>, <curl / curl.h>, and others for input / output operations, file handling, cURL library, and JSON parsing.
 
 //Namespace Usage : The code uses namespaces rapidjson and std for the rapidjson library and standard library functionalities.
@@ -340,3 +343,5 @@ int main() {
 //User Interaction : Throughout the program, it interacts with the user through the console, prompting for input and displaying information and options.It allows users to set favorites, view favorites, and perform various actions related to data management.
 
 //Overall, this program serves as a simple weather application that fetches and displays weather data based on user input while providing options for data management.
+
+
